@@ -5,12 +5,12 @@ library(debkeepr)
 library(packcircles)
 library(hrbrthemes)
 
-
-# Opening values ----------------------------------------------------------
-
+# Data
 transactions <- read_rds("data/transactions.rds")
 accounts <- read_csv("data/accounts.csv") %>% 
   select(id = account_id, label)
+
+# Opening values ----------------------------------------------------------
 
 # Simplify account names that will be used for labels
 accounts$label <- str_replace(accounts$label,
@@ -36,8 +36,7 @@ opening_credit <- transactions %>%
 opening <- bind_rows(opening_debit, opening_credit) %>% 
   left_join(accounts, by = "id") %>% 
   mutate(value = as.numeric(lsd),
-         text = deb_text(lsd),
-         label = if_else(lsd >= 1000, paste(label, text, sep = "-"), ""),
+         label = if_else(lsd >= 1000, paste(label, deb_text(lsd), sep = "-"), ""),
          # Relation as factor to make debit be red
          relation = factor(relation, levels = c("Debtor", "Creditor")))
 
@@ -84,9 +83,11 @@ ggplot() +
 ggsave("plots/circles-opening.png", width = 10, height = 8)
 
 
-###############################################################################
-############################## Closing values #################################
-###############################################################################
+# Closing values ----------------------------------------------------------
+
+# Clean accounts data
+accounts <- read_csv("data/accounts.csv") %>% 
+  select(id = account_id, label)
 
 # Simplify account names that will be used for labels
 accounts$label <- str_replace_all(accounts$label, 
@@ -94,32 +95,41 @@ accounts$label <- str_replace_all(accounts$label,
                                   "Heirs of Maria")
 accounts$label <- str_replace(accounts$label, 
                               "Marten della Faille’s.*",
-                              "Heirs of Anna de Hane")
+                              "Heirs of \n Anna de Hane")
 accounts$label <- str_replace(accounts$label, 
                               "Jacques, Jan.*",
                               "Jacques, Jan, \n Carlo, and Hester")
 accounts$label <- str_replace(accounts$label,
                               "Branch of Venice new.*",
-                              "Branch of Venice \n new account")
+                              "Branch of Venice")
 accounts$label <- str_replace(accounts$label,
                               "Marten, Steven.*",
                               "Marten, Steven, \n and Anna")
 accounts$label <- str_replace(accounts$label,
                               "Heirs of Gilles.*",
-                              "Heirs of Gilles Hasebaert \n and Magdalena du Boys")
+                              "Heirs of \n Gilles Hasebaert")
+accounts$label <- str_replace(accounts$label,
+                              "Expenses of the lawsuit.*",
+                              "Lawsuit against \n Daniel de Hane")
+accounts$label <- str_replace(accounts$label,
+                              "Creditors of the Book",
+                              "Creditors of \n the Book")
+accounts$label <- str_replace(accounts$label,
+                              "Expenses of English wool",
+                              "Expenses of \n English wool")
+accounts$label <- str_replace(accounts$label,
+                              "Accounts to be written off",
+                              "Written off")
 
 closing <- deb_open(transactions) %>% 
   left_join(accounts, by = c("account_id" = "id")) %>% 
-  mutate(relation = if_else(l + s + d > 0, "Creditor", "Debtor"),
-         l = if_else(l < 0, -l, l),
-         s = if_else(s < 0, -s, s),
-         d = if_else(d < 0, -d, d)) %>% 
-  deb_lsd_l_mutate(column_name = value) %>% 
-  mutate(lsd = paste0("£", scales::comma(l), " ", s, "s. ", round(d), "d."),
-         label = if_else(l >= 300, paste(label, lsd, sep = "-"), ""))
-
-closing$relation <- as_factor(closing$relation) %>% 
-  fct_relevel(c("Debtor", "Creditor"))
+  mutate(relation = if_else(lsd > 0, "Creditor", "Debtor"),
+         # Relation as factor to make debit be red
+         relation = factor(relation, levels = c("Debtor", "Creditor")),
+         # make all values positive for size and labeling
+         lsd = if_else(lsd > 0 , lsd, -lsd),
+         value = as.numeric(lsd),
+         label = if_else(lsd >= 200, paste(label, deb_text(lsd), sep = "-"), ""))
 
 ## Make circles ##
 packing_closing <- circleProgressiveLayout(closing$value, sizetype = "area")
@@ -134,8 +144,9 @@ dat.gg_closing <- circleLayoutVertices(packing_closing, npoints = 50) %>%
   left_join(relation_id_closing, by = "id")
 
 # Total value at end of 1594
-deb_balance(transactions) %>% 
-  mutate(lsd = paste0("£", scales::comma(l), " ", s, "s. ", round(d), "d."))
+balance_text <- deb_balance(transactions) %>% 
+  mutate(text = deb_text(lsd)) %>% 
+  pull(text)
 
 # Plot
 ggplot() + 
@@ -143,17 +154,21 @@ ggplot() +
                color = "black", alpha = 0.6) +
   geom_text(data = closing_circles, aes(x, y, size = value,
                                         label = str_replace_all(label, "-", "\n"))) +
-  scale_size_continuous(range = c(1, 4.5)) +
+  scale_size_continuous(range = c(1, 4)) +
   guides(size = FALSE) + 
   labs(fill = "Relation") +
   ggtitle("Value of accounts in the estate of Jan della Faille de Oude, 31 December 1594",
-          subtitle = "Current value of the estate: £9,768 1s. 8d.") + 
-  theme_ipsum(plot_margin = margin(20, 20, 20, 20)) + 
+          subtitle = paste0("Current value of the estate: ", balance_text[[1]])) + 
+  theme_ipsum(plot_margin = margin(20, 20, 20, 20),
+              grid = FALSE) + 
   theme(panel.grid = element_blank(),
-        axis.text = element_blank(),
-        axis.title = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
         legend.title = element_text(face = "bold", size = 12),
         legend.text = element_text(size = 12)) + 
   coord_equal()
 
-ggsave("plots-aans/circles-closing.png", width = 10, height = 8)
+ggsave("plots/circles-closing.png", width = 10, height = 8)
+
