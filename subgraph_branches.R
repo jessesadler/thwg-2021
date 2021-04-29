@@ -93,7 +93,7 @@ ggraph(branches, layout = "kk") +
   ggtitle("Subgraph of the branches in the trade of Jan de Oude",
           subtitle = "Estate of Jan della Faille de Oude, 1582–1594")
 
-ggsave("plots-aans/branches-credit.png", width = 10, height = 8)
+ggsave("plots/branches-credit.png", width = 10, height = 8)
 
 # Size is total debit
 set.seed(240)
@@ -115,4 +115,4 @@ ggraph(branches, layout = "kk") +
   ggtitle("Subgraph of the branches in the trade of Jan de Oude",
           subtitle = "Estate of Jan della Faille de Oude, 1582–1594")
 
-ggsave("plots-aans/branches-debit.png", width = 10, height = 8)
+ggsave("plots/branches-debit.png", width = 10, height = 8)
