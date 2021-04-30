@@ -6,7 +6,8 @@ library(glue)
 library(ggtext)
 library(hrbrthemes)
 
-# Will need to figure out way to create this chart with data from transactions.rds
+# Will need to figure out way to create this plot with data from transactions.rds
+# The current values are taken from my notes on DFL 12
 
 siblings <- c("Jan", "Anna", "Marten", "Carlo", "Jacques",
               "Steven", "Maria", "Hester", "Cornelia")

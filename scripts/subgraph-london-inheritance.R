@@ -1,5 +1,7 @@
-### Graph of accounts dealing with a single account ###
-# Uses account and transactions groups
+## Subgraph of London Inheritance in 1594 ##
+# Script concentrates on account of Branch of London Nieuwe rekening
+# Uses Branch of London Nieuwe rekening and accounts of the division
+# of the inheritance in London.
 
 library(tidyverse)
 library(igraph)

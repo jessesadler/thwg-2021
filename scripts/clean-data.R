@@ -55,7 +55,7 @@ transactions_group <- transactions %>%
   select(-credit, -debit) %>% 
   rename(credit = id.x, debit = id.y) %>% 
   select(credit, debit, date, lsd) %>% 
-  filter(credit != debit) # Remove transactions between the same group
+  filter(credit != debit) # Remove transactions within the same group
 
 write_csv(accounts_group, "data/accounts-group.csv")
 write_rds(transactions_group, "data/transactions-group.rds")

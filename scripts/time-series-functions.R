@@ -1,9 +1,9 @@
 ## Function to convert running accounts to xts and from xts ##
 
-library(dplyr)
+library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
 library(timetk)
-library(xts)
+library(xts, warn.conflicts = FALSE)
 library(debkeepr)
 
 # Create running accounts by group function takes a transactions data frame and

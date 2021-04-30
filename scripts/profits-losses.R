@@ -17,7 +17,9 @@ accounts <- read_csv("data/accounts.csv") %>%
 profits <- "dfl12_038"
 maternal <- c("Hester", "Cornelia", "Marten", "Steven", "Anna", "Jacques")
 
-# Credit: Sources of profits
+
+# Credit: Sources of profits ----------------------------------------------
+
 credit <- transactions %>% 
   filter(credit == profits) %>% 
   left_join(accounts, by = c("debit" = "account_id")) %>% 
@@ -38,7 +40,9 @@ p1 <- ggplot(data = credit) +
         axis.title.x = element_blank()) + 
   ggtitle("Sources of profits, 1579 to 15 Dec 1583")
 
-# Debit: Distribution of profits
+
+# Debit: Distribution of profits ------------------------------------------
+
 debit <- transactions %>% 
   filter(debit == profits) %>% 
   left_join(accounts, by = c("credit" = "account_id")) %>% 

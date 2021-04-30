@@ -1,5 +1,6 @@
 ## Branches subgraph ##
 
+# Script shows movement of capital between branches
 # Uses account and transactions groups
 
 library(tidyverse)
