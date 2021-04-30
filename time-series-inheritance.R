@@ -8,8 +8,9 @@ library(timetk)
 library(lubridate)
 library(dygraphs)
 library(debkeepr)
-library(ggrepel)
 library(hrbrthemes)
+library(glue)
+library(ggtext)
 source("time-series-functions.R")
 
 # This script uses tbl-xts functions
@@ -72,35 +73,77 @@ ggplot(inheritance1) +
   scale_y_continuous(breaks = c(0, 5000, 10000),
                      labels = scales::dollar_format(prefix = "£")) + 
   scale_x_date(breaks = scales::breaks_width("1 year"), date_labels = "%Y") + 
-  labs(y = NULL, x = NULL, color = "Heirs") + 
+  labs(title = "Inheritance due to the heirs of Jan de Oude",
+       subtitle = "November 1582 to March 1585",
+       caption = "Figure 5") + 
   facet_wrap(~ id, nrow = 3) + 
-  theme_ipsum(base_size = 12,
-              base_family = "Avenir Next") + 
-  theme(legend.position = "none") + 
-  ggtitle("Inheritance due to the heirs of Jan de Oude",
-          subtitle = "November 1582 to March 1585")
+  theme_ipsum(base_size = 14,
+              caption_face = "plain",
+              caption_size = 14) + 
+  theme(legend.position = "none",
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank())
+
+ggsave("plots/inheritance-1583-1585-facet.png", width = 8, height = 6)
 
 # Facet: 1594
+
+# End value for text annotation
+end_value <- inheritance2 %>% 
+  filter(date == last(date)) %>% 
+  mutate(text = paste0("End value: ", text))
+
 ggplot(inheritance2) + 
   geom_line(aes(x = date, y = current, group = id, color = id)) + 
-#  gghighlight::gghighlight(label_key = id, use_direct_label = FALSE) + 
+  geom_text(data = end_value, aes(x = ymd("1594-11-01"), y = 4200, label = text), size = 3.5) + 
   scale_y_continuous(breaks = c(0, 2000, 4000),
                      labels = scales::dollar_format(prefix = "£")) + 
   scale_x_date(breaks = scales::breaks_width("1 month"),
                labels = scales::label_date_short()) + 
-  labs(y = NULL, x = NULL, color = "Heirs") + 
+  labs(title = "Inheritance due to the heirs of Jan de Oude",
+       subtitle = "September 1594 to 16 December 1594",
+       caption = "Figure 10") + 
   facet_wrap(~ id, nrow = 3) + 
-  theme_ipsum(base_size = 12,
-              base_family = "Avenir Next") + 
-  theme(legend.position = "none") + 
-  ggtitle("Inheritance due to the heirs of Jan de Oude",
-          subtitle = "September 1594 to 16 December 1594")
+  theme_ipsum(base_size = 14,
+              caption_face = "plain",
+              caption_size = 14) + 
+  theme(legend.position = "none",
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank())
 
+ggsave("plots/inheritance-1594-facet.png", width = 8, height = 6)
 
 # Single plots ------------------------------------------------------------
 
+# Full: gghighlight
+hex <- scales::hue_pal()(9)
+styled_subtitle <- glue("Highlighting the inheritance of 
+                        <span style='color:{hex[[8]]};'>Hester</span> and 
+                        <span style='color:{hex[[4]]};'>Carlo</span>")
 
-# Plot
+ggplot(inheritance_tbl) + 
+  geom_line(aes(x = date, y = current, group = id, color = id), size = 1) + 
+  gghighlight::gghighlight(id == "Hester" | id == "Carlo",
+                           label_key = id,
+                           use_direct_label = FALSE) + 
+  scale_color_manual(values = c(hex[[4]], hex[[8]])) + 
+  scale_y_continuous(breaks = c(0, 5000, 10000),
+                     labels = scales::dollar_format(prefix = "£")) + 
+  scale_x_date(breaks = scales::pretty_breaks(), date_labels = "%Y") + 
+  labs(title = "Inheritance of the heirs of Jan de Oude, 1582–1594",
+       subtitle = styled_subtitle,
+       caption = "Figure 6") + 
+  theme_ipsum(base_size = 14,
+              caption_face = "plain",
+              caption_size = 14) + 
+  theme(legend.position = "none",
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        plot.subtitle = element_markdown())
+
+ggsave("plots/inheritance-running-gghighlight.png", width = 8, height = 6)
+
+# Regular
 ggplot(inheritance_tbl) + 
   geom_line(aes(x = date, y = current, group = id, color = id)) + 
   scale_y_continuous(labels = scales::dollar_format(prefix = "£")) + 

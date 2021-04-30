@@ -71,7 +71,6 @@ nodes <- branches_groups %>%
 # Creates vertices from branches data
 branches <- graph_from_data_frame(d = transactions_sum,
                                   vertices = nodes, directed = TRUE)
-set_graph_style()
 
 # Size is total credit
 set.seed(240)
@@ -84,14 +83,21 @@ ggraph(branches, layout = "kk") +
   geom_node_text(aes(label = label), repel = TRUE) + 
   scale_size_continuous(range = c(0.8, 10), labels = scales::dollar_format(prefix = "£")) + 
   scale_color_discrete(labels = c(siblings_fct, "Other")) + 
-  labs(size = "Total credit",
+  labs(title = "Subgraph of the branches in the trade of Jan de Oude",
+       subtitle = "Estate of Jan della Faille de Oude, 1582–1594",
+       size = "Total credit",
        edge_alpha = "Transactions",
        color = "Heirs") + 
   guides(color = guide_legend(ncol = 2, override.aes = list(size = 4), order = 1)) + 
+  theme_ipsum(grid = FALSE,
+              caption_face = "plain",
+              caption_size = 14) + 
   theme(legend.title = element_text(face = "bold", size = 12),
-        legend.text = element_text(size = 12)) +
-  ggtitle("Subgraph of the branches in the trade of Jan de Oude",
-          subtitle = "Estate of Jan della Faille de Oude, 1582–1594")
+        legend.text = element_text(size = 12),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_blank())
 
 ggsave("plots/branches-credit.png", width = 10, height = 8)
 
@@ -106,13 +112,21 @@ ggraph(branches, layout = "kk") +
   geom_node_text(aes(label = label), repel = TRUE) + 
   scale_size_continuous(range = c(0.8, 10), labels = scales::dollar_format(prefix = "£")) + 
   scale_color_discrete(labels = c(siblings_fct, "Other")) + 
-  labs(size = "Total debit",
+  labs(title = "Subgraph of the branches in the trade of Jan de Oude",
+       subtitle = "Estate of Jan della Faille de Oude, 1582–1594",
+       caption = "Figure 7",
+       size = "Total debit",
        edge_alpha = "Transactions",
        color = "Heirs") + 
   guides(color = guide_legend(ncol = 2, override.aes = list(size = 4), order = 1)) + 
+  theme_ipsum(grid = FALSE,
+              caption_face = "plain",
+              caption_size = 14) + 
   theme(legend.title = element_text(face = "bold", size = 12),
-        legend.text = element_text(size = 12)) +
-  ggtitle("Subgraph of the branches in the trade of Jan de Oude",
-          subtitle = "Estate of Jan della Faille de Oude, 1582–1594")
+        legend.text = element_text(size = 12),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_blank())
 
 ggsave("plots/branches-debit.png", width = 10, height = 8)

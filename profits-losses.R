@@ -33,7 +33,7 @@ p1 <- ggplot(data = credit) +
   geom_bar(aes(x = group, y = value), stat = "identity") + 
   scale_y_continuous(labels = scales::dollar_format(prefix = "£")) + 
   coord_flip() + 
-  theme_ipsum() + 
+  theme_ipsum(base_size = 14) + 
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank()) + 
   ggtitle("Sources of profits, 1579 to 15 Dec 1583")
@@ -67,8 +67,11 @@ p2 <- ggplot(data = debit) +
   geom_bar(aes(x = group, y = value, fill = label), stat = "identity") + 
   scale_y_continuous(labels = scales::dollar_format(prefix = "£")) + 
   coord_flip() + 
-  labs(title = styled_title) + 
-  theme_ipsum() + 
+  labs(title = styled_title,
+       caption = "Figure 3") + 
+  theme_ipsum(base_size = 14,
+              caption_face = "plain",
+              caption_size = 14) + 
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
         plot.title = element_markdown(),

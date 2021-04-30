@@ -66,18 +66,21 @@ ggplot() +
                                         label = str_replace_all(label, "-", "\n"))) +
   scale_size_continuous(range = c(1, 4.5)) +
   guides(size = FALSE) + 
-  labs(fill = "Relation") +
-  ggtitle("Value of accounts in the estate of Jan della Faille de Oude, 8 December 1582",
-          subtitle = paste0("Opening value of the estate: ", debit_text[[2]])) + 
+  labs(title = "Value of accounts in the estate of Jan della Faille de Oude, 8 December 1582",
+       subtitle = paste0("Opening value of the estate: ", debit_text[[2]]),
+       caption = "Figure 2",
+       fill = "Relation") + 
   theme_ipsum(plot_margin = margin(20, 20, 20, 20),
-              grid = FALSE) + 
+              grid = FALSE,
+              caption_face = "plain",
+              caption_size = 14) + 
   theme(panel.grid = element_blank(),
         axis.text.y = element_blank(),
         axis.title.y = element_blank(),
         axis.text.x = element_blank(),
         axis.title.x = element_blank(),
-        legend.title = element_text(face = "bold", size = 12),
-        legend.text = element_text(size = 12)) + 
+        legend.title = element_text(face = "bold", size = 14),
+        legend.text = element_text(size = 14)) + 
   coord_equal()
 
 ggsave("plots/circles-opening.png", width = 10, height = 8)
@@ -156,18 +159,21 @@ ggplot() +
                                         label = str_replace_all(label, "-", "\n"))) +
   scale_size_continuous(range = c(1, 4)) +
   guides(size = FALSE) + 
-  labs(fill = "Relation") +
-  ggtitle("Value of accounts in the estate of Jan della Faille de Oude, 31 December 1594",
-          subtitle = paste0("Current value of the estate: ", balance_text[[1]])) + 
+  labs(title = "Value of accounts in the estate of Jan della Faille de Oude, 31 December 1594",
+       subtitle = paste0("Capital remaining in the estate at the close of the books: ", balance_text[[1]]),
+       caption = "Figure 9",
+       fill = "Relation") + 
   theme_ipsum(plot_margin = margin(20, 20, 20, 20),
-              grid = FALSE) + 
+              grid = FALSE,
+              caption_face = "plain",
+              caption_size = 14) + 
   theme(panel.grid = element_blank(),
         axis.text.y = element_blank(),
         axis.title.y = element_blank(),
         axis.text.x = element_blank(),
         axis.title.x = element_blank(),
-        legend.title = element_text(face = "bold", size = 12),
-        legend.text = element_text(size = 12)) + 
+        legend.title = element_text(face = "bold", size = 14),
+        legend.text = element_text(size = 14)) + 
   coord_equal()
 
 ggsave("plots/circles-closing.png", width = 10, height = 8)
