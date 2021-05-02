@@ -8,7 +8,7 @@ library(debkeepr)
 
 # Create running accounts by group function takes a transactions data frame and
 # vector of ids to filter by. Returns a running account with group, date, and
-# cumulative sum of denarii. Function comes from time-series-branch script.
+# deb_lsd column.
 # Can also be used as cumulative for single group, such as single heir.
 deb_running <- function(transactions, accounts, label, ids) {
   label <- enquo(label)
