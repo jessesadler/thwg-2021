@@ -1,4 +1,4 @@
-## Branches subgraph ##
+## Branches subgraph to 15 March 1585 ##
 
 # Script shows movement of capital between branches
 # Uses account and transactions groups
@@ -10,11 +10,12 @@ library(debkeepr)
 library(hrbrthemes)
 
 # Load data
-transactions_group <- read_rds("data/transactions-group.rds")
+transactions_group <- read_rds("data/transactions-group.rds") %>%
+  filter(date <= lubridate::ymd("1585-03-15"))
 accounts_group <- read_csv("data/accounts-group.csv") %>%
   select(id, group, type) %>%
-  mutate(group = str_replace(group, "Balance on 8 November",
-                             paste("Opening", "balance", sep = "\n")))
+  mutate(group = str_replace(group, "Balance on 8 November", ""),
+         group = str_replace(group, "Profits and losses", ""))
 
 # Siblings by age order to create factor levels
 siblings_fct <- c("Jan", "Anna", "Marten", "Carlo", "Jacques",
@@ -74,35 +75,6 @@ nodes <- branches_groups %>%
 branches <- graph_from_data_frame(d = transactions_sum,
                                   vertices = nodes, directed = TRUE)
 
-# Size is total credit
-set.seed(240)
-ggraph(branches, layout = "kk") +
-  geom_edge_fan(aes(edge_alpha = l),
-                arrow = arrow(length = unit(3, 'mm')),
-                end_cap = circle(2, 'mm')) +
-  scale_edge_alpha(labels = scales::dollar_format(prefix = "£")) +
-  geom_node_point(aes(size = credit, color = color), alpha = 0.9) +
-  geom_node_text(aes(label = label), repel = TRUE) +
-  scale_size_continuous(range = c(0.8, 10), labels = scales::dollar_format(prefix = "£")) +
-  scale_color_discrete(labels = c(siblings_fct, "Other")) +
-  labs(title = "Subgraph of the branches in the trade of Jan de Oude",
-       subtitle = "Estate of Jan della Faille de Oude, 1582–1594",
-       size = "Total credit",
-       edge_alpha = "Transactions",
-       color = "Heirs") +
-  guides(color = guide_legend(ncol = 2, override.aes = list(size = 4), order = 1)) +
-  theme_ipsum(grid = FALSE,
-              caption_face = "plain",
-              caption_size = 14) +
-  theme(legend.title = element_text(face = "bold", size = 12),
-        legend.text = element_text(size = 12),
-        axis.title.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.text.x = element_blank())
-
-ggsave("plots/branches-credit.png", width = 10, height = 8)
-
 # Size is total debit
 set.seed(240)
 ggraph(branches, layout = "kk") +
@@ -115,15 +87,14 @@ ggraph(branches, layout = "kk") +
   scale_size_continuous(range = c(0.8, 10), labels = scales::dollar_format(prefix = "£")) +
   scale_color_discrete(labels = c(siblings_fct, "Other")) +
   labs(title = "Subgraph of the branches in the trade of Jan de Oude",
-       subtitle = "Estate of Jan della Faille de Oude, 1582–1594",
-       caption = "Figure 7",
+       subtitle = "8 November 1582 to 15 March 1585",
        size = "Total debit",
        edge_alpha = "Transactions",
        color = "Heirs") +
   guides(color = guide_legend(ncol = 2, override.aes = list(size = 4), order = 1)) +
   theme_ipsum(grid = FALSE,
-              caption_face = "plain",
-              caption_size = 14) +
+              plot_title_size = 20,
+              subtitle_size = 14) +
   theme(legend.title = element_text(face = "bold", size = 12),
         legend.text = element_text(size = 12),
         axis.title.y = element_blank(),
@@ -131,4 +102,4 @@ ggraph(branches, layout = "kk") +
         axis.text.y = element_blank(),
         axis.text.x = element_blank())
 
-ggsave("plots/branches-debit.png", width = 10, height = 8)
+ggsave("plots/branches-1585-03-15.png", width = 10, height = 8)
