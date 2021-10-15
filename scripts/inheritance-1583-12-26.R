@@ -25,14 +25,14 @@ inheritance <- tibble(heir = rep(siblings, 3),
                       account = c(rep("Paternal", 9),
                                   rep("Maternal", 9),
                                   rep("Sororal", 9)),
-                      lsd = c(paternal, maternal, sororal)) %>% 
+                      lsd = c(paternal, maternal, sororal)) %>%
   mutate(value = as.numeric(lsd))
 
 # Reorder heirs by total inheritance owed
-fct_order <- inheritance %>% 
-  group_by(heir) %>% 
-  summarise(lsd = sum(lsd)) %>% 
-  arrange(lsd) %>% 
+fct_order <- inheritance %>%
+  group_by(heir) %>%
+  summarise(lsd = sum(lsd)) %>%
+  arrange(lsd) %>%
   pull(heir)
 
 inheritance$heir <- factor(inheritance$heir, levels = fct_order)
@@ -43,22 +43,51 @@ inheritance$account <- factor(inheritance$account, levels = c("Sororal", "Matern
 # Plot
 hex <- scales::hue_pal()(3)
 styled_title <- glue("
-      <span style='color:{hex[[3]]};'>Paternal</span>, 
-      <span style='color:{hex[[2]]};'>Maternal</span>, and 
+      <span style='color:{hex[[3]]};'>Paternal</span>,
+      <span style='color:{hex[[2]]};'>Maternal</span>, and
       <span style='color:{hex[[1]]};'>Sororal</span> inheritance on 26 Dec 1583")
 
-ggplot(inheritance) + 
-  geom_bar(aes(x = heir, weight = value, fill = account)) + 
-  scale_y_continuous(labels = scales::dollar_format(prefix = "£")) + 
-  coord_flip() + 
+ggplot(inheritance) +
+  geom_bar(aes(x = heir, weight = value, fill = account)) +
+  scale_y_continuous(labels = scales::dollar_format(prefix = "£")) +
+  coord_flip() +
   labs(title = styled_title,
-       caption = "Figure 4") + 
+       caption = "Figure 4") +
   theme_ipsum(base_size = 14,
               caption_face = "plain",
-              caption_size = 14) + 
+              caption_size = 14) +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
         plot.title = element_markdown(),
         legend.position = "none")
 
 ggsave("plots/inheritance-1583-12-26.png", width = 8, height = 5)
+
+# Heir color
+heir_color <- tibble(
+  sibling = c("Jan", "Anna", "Marten", "Carlo", "Jacques",
+              "Steven", "Maria", "Hester", "Cornelia"),
+  color = scales::hue_pal()(9))
+
+## Maternal inheritance ##
+maternal_tbl <- inheritance %>%
+  filter(account == "Maternal",
+         lsd > 0) %>%
+  select(-account) %>%
+  left_join(heir_color, by = c("heir" = "sibling"))
+
+ggplot(maternal_tbl) +
+  geom_bar(aes(x = fct_reorder(heir, value),
+               weight = value,
+               fill = color)) +
+  scale_y_continuous(labels = scales::dollar_format(prefix = "£")) +
+  scale_fill_identity(guide = "none") +
+  labs(title = "Maternal inheritance, 26 December 1583") +
+  coord_flip() +
+  theme_ipsum(base_size = 14,
+              caption_face = "plain",
+              caption_size = 14) +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank())
+
+ggsave("plots/maternal-1583-12-26.png", width = 8, height = 5)

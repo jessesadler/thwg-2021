@@ -143,3 +143,52 @@ ggplot(inher_running) +
         plot.subtitle = element_markdown())
 
 ggsave("plots/inheritance-running-gghighlight.png", width = 8, height = 6)
+
+# Phase 1: 1582-1585
+ggplot(inher1) +
+  geom_line(aes(x = date, y = current, group = group, color = group), size = 1) +
+  gghighlight::gghighlight(group == "Hester" | group == "Carlo",
+                           label_key = group,
+                           use_group_by = FALSE,
+                           use_direct_label = FALSE) +
+  scale_color_manual(values = c(hex[[4]], hex[[8]])) +
+  scale_y_continuous(breaks = c(0, 5000, 10000),
+                     labels = scales::dollar_format(prefix = "£")) +
+  scale_x_date(breaks = scales::breaks_width("1 year"), date_labels = "%Y") +
+  labs(title = "Phase 1: Novemeber 1582 to March 1585",
+       subtitle = styled_subtitle,
+       color = "Heirs") +
+  theme_ipsum(base_size = 14,
+              caption_face = "plain",
+              caption_size = 14) +
+  theme(legend.position = "none",
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        plot.subtitle = element_markdown())
+
+ggsave("plots/phase-1.png", width = 8, height = 6)
+
+# Phase 3: 1594
+ggplot(inher2_reorder) +
+  geom_line(aes(x = date, y = current, group = group, color = group), size = 1) +
+  gghighlight::gghighlight(group == "Hester" | group == "Carlo",
+                           label_key = group,
+                           use_group_by = FALSE,
+                           use_direct_label = FALSE) +
+  scale_color_manual(values = c(hex[[4]], hex[[8]])) +
+  scale_y_continuous(breaks = c(0, 2000, 4000),
+                     labels = scales::dollar_format(prefix = "£")) +
+  scale_x_date(breaks = scales::breaks_width("1 month"),
+               labels = scales::label_date_short()) +
+  labs(title = "Phase 3: September to December 1594",
+       subtitle = styled_subtitle,
+       color = "Heirs") +
+  theme_ipsum(base_size = 14,
+              caption_face = "plain",
+              caption_size = 14) +
+  theme(legend.position = "none",
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        plot.subtitle = element_markdown())
+
+ggsave("plots/phase-3.png", width = 8, height = 6)
